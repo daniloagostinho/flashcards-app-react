@@ -1,47 +1,62 @@
 import React, { useState } from 'react';
-import { FaCar, FaPlane, FaAppleAlt, FaDog, FaCat } from 'react-icons/fa';
 
-interface IconOptions {
-  [key: string]: JSX.Element;
+interface Flashcard {
+  word: string;
+  iconUrl: string;
 }
-
-const icons: IconOptions = {
-  car: <FaCar className="text-primary" size={60} />,
-  plane: <FaPlane className="text-primary" size={60} />,
-  apple: <FaAppleAlt className="text-primary" size={60} />,
-  dog: <FaDog className="text-primary" size={60} />,
-  cat: <FaCat className="text-primary" size={60} />,
-};
 
 const App: React.FC = () => {
   const [word, setWord] = useState<string>('');
-  const [selectedIcon, setSelectedIcon] = useState<JSX.Element | null>(null);
-  const [flashcards, setFlashcards] = useState<{ word: string; icon: JSX.Element }[]>([]);
+  const [iconUrl, setIconUrl] = useState<string | null>(null);
+  const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
 
-  const handleSearch = () => {
-    const icon = icons[word.toLowerCase()];
-    if (icon) {
-      setSelectedIcon(icon);
-    } else {
-      alert('No icon found for this word. Try another.');
+  const handleSearch = async () => {
+    if (!word.trim()) {
+      alert('Please enter a word.');
+      return;
+    }
+
+    try {
+      // Fetch icons related to the search term from Iconify API
+      const response = await fetch(`https://api.iconify.design/search?query=${encodeURIComponent(word.toLowerCase())}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.icons && data.icons.length > 0) {
+          // Use the first matching icon
+          const iconName = data.icons[0];
+          const iconUrl = `https://api.iconify.design/${iconName}.svg`;
+          setIconUrl(iconUrl);
+        } else {
+          alert('No icon found for this word. Try another.');
+          setIconUrl(null);
+        }
+      } else {
+        alert('Failed to fetch icon. Please try again.');
+        setIconUrl(null);
+      }
+    } catch (error) {
+      console.error('Error fetching icon:', error);
+      alert('Failed to fetch icon. Please try again.');
+      setIconUrl(null);
     }
   };
 
   const handleConfirm = () => {
-    if (selectedIcon) {
-      // Prepend the new flashcard to the list
-      setFlashcards((prevFlashcards) => [{ word, icon: selectedIcon }, ...prevFlashcards]);
+    if (iconUrl) {
+      setFlashcards((prevFlashcards) => [
+        { word, iconUrl },
+        ...prevFlashcards,
+      ]);
       setWord('');
-      setSelectedIcon(null);
+      setIconUrl(null);
     }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    setWord(inputValue);
+    setWord(e.target.value);
 
-    if (inputValue === '') {
-      setSelectedIcon(null);
+    if (e.target.value === '') {
+      setIconUrl(null);
     }
   };
 
@@ -71,9 +86,9 @@ const App: React.FC = () => {
         </button>
         <button
           onClick={handleConfirm}
-          disabled={!selectedIcon}
+          disabled={!iconUrl}
           className={`px-6 py-3 rounded-xl text-lg font-semibold ${
-            selectedIcon
+            iconUrl
               ? 'bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 shadow-sm'
               : 'bg-gray-400 cursor-not-allowed'
           }`}
@@ -82,9 +97,12 @@ const App: React.FC = () => {
         </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 w-full max-w-4xl">
-        {selectedIcon && (
+        {iconUrl && (
           <div className="flex flex-col items-center justify-center w-full sm:w-56 h-56 bg-white rounded-3xl shadow-lg p-4">
-            {selectedIcon}
+            <div
+              className="w-32 h-32 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full flex items-center justify-center"
+              style={{ maskImage: `url(${iconUrl})`, maskSize: 'cover', WebkitMaskImage: `url(${iconUrl})`, WebkitMaskSize: 'cover' }}
+            ></div>
             <p className="mt-4 text-xl font-semibold text-gray-800">{word}</p>
           </div>
         )}
@@ -93,7 +111,10 @@ const App: React.FC = () => {
             key={index}
             className="flex flex-col items-center justify-center w-full sm:w-56 h-56 bg-white rounded-3xl shadow-lg p-4"
           >
-            {card.icon}
+            <div
+              className="w-32 h-32 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full flex items-center justify-center"
+              style={{ maskImage: `url(${card.iconUrl})`, maskSize: 'cover', WebkitMaskImage: `url(${card.iconUrl})`, WebkitMaskSize: 'cover' }}
+            ></div>
             <p className="mt-4 text-xl font-semibold text-gray-800">{card.word}</p>
           </div>
         ))}
