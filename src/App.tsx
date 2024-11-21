@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 
 interface Flashcard {
   word: string;
-  iconUrl: string;
+  imageUrl: string;
 }
 
 const App: React.FC = () => {
   const [word, setWord] = useState<string>('');
-  const [iconUrl, setIconUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
 
   useEffect(() => {
@@ -31,32 +31,39 @@ const App: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`https://api.iconify.design/search?query=${encodeURIComponent(word.toLowerCase())}`);
+      const response = await fetch(
+        `https://api.unsplash.com/search/photos?query=${encodeURIComponent(word.toLowerCase())}&per_page=1`,
+        {
+          headers: {
+            Authorization: `78x0tju6NTslUCiEUN93M3nijFQO0sndMLQBIQ0Gfxo`, // Replace with your Unsplash API key
+          },
+        }
+      );
+
       if (response.ok) {
         const data = await response.json();
-        if (data.icons && data.icons.length > 0) {
-          const iconName = data.icons[0];
-          const iconUrl = `https://api.iconify.design/${iconName}.svg`;
-          setIconUrl(iconUrl); // Set the icon URL immediately
+        if (data.results && data.results.length > 0) {
+          const imageUrl = data.results[0].urls.small; // Use the first image result
+          setImageUrl(imageUrl);
         } else {
-          alert('No icon found for this word. Try another.');
-          setIconUrl(null);
+          alert('No image found for this word. Try another.');
+          setImageUrl(null);
         }
       } else {
-        alert('Failed to fetch icon. Please try again.');
-        setIconUrl(null);
+        alert('Failed to fetch image. Please try again.');
+        setImageUrl(null);
       }
     } catch (error) {
-      console.error('Error fetching icon:', error);
-      alert('Failed to fetch icon. Please try again.');
-      setIconUrl(null);
+      console.error('Error fetching image:', error);
+      alert('Failed to fetch image. Please try again.');
+      setImageUrl(null);
     }
   };
 
   const handleSave = async () => {
-    if (iconUrl) {
+    if (imageUrl) {
       try {
-        const newFlashcard = { word, iconUrl };
+        const newFlashcard = { word, imageUrl };
         const response = await fetch('https://backend-flashcards-app.vercel.app/flashcards', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -67,7 +74,7 @@ const App: React.FC = () => {
           const savedFlashcard = await response.json();
           setFlashcards((prevFlashcards) => [savedFlashcard, ...prevFlashcards]);
           setWord('');
-          setIconUrl(null);
+          setImageUrl(null);
         } else {
           alert('Failed to save flashcard.');
         }
@@ -82,7 +89,7 @@ const App: React.FC = () => {
     setWord(e.target.value);
 
     if (e.target.value === '') {
-      setIconUrl(null);
+      setImageUrl(null);
     }
   };
 
@@ -108,13 +115,13 @@ const App: React.FC = () => {
               : 'bg-gray-400 cursor-not-allowed'
           }`}
         >
-          Search Icon
+          Search Image
         </button>
         <button
           onClick={handleSave}
-          disabled={!iconUrl}
+          disabled={!imageUrl}
           className={`px-6 py-3 rounded-xl text-lg font-semibold ${
-            iconUrl
+            imageUrl
               ? 'bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 shadow-sm'
               : 'bg-gray-400 cursor-not-allowed'
           }`}
@@ -123,17 +130,9 @@ const App: React.FC = () => {
         </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 w-full max-w-4xl">
-        {iconUrl && (
+        {imageUrl && (
           <div className="flex flex-col items-center justify-center w-full sm:w-56 h-56 bg-white rounded-3xl shadow-lg p-4">
-            <div
-              className="w-32 h-32 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full flex items-center justify-center"
-              style={{
-                maskImage: `url(${iconUrl})`,
-                maskSize: 'cover',
-                WebkitMaskImage: `url(${iconUrl})`,
-                WebkitMaskSize: 'cover',
-              }}
-            ></div>
+            <img src={imageUrl} alt={word} className="w-32 h-32 object-contain rounded-lg" />
             <p className="mt-4 text-xl font-semibold text-gray-800">{word}</p>
           </div>
         )}
@@ -142,15 +141,7 @@ const App: React.FC = () => {
             key={index}
             className="flex flex-col items-center justify-center w-full sm:w-56 h-56 bg-white rounded-3xl shadow-lg p-4"
           >
-            <div
-              className="w-32 h-32 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full flex items-center justify-center"
-              style={{
-                maskImage: `url(${card.iconUrl})`,
-                maskSize: 'cover',
-                WebkitMaskImage: `url(${card.iconUrl})`,
-                WebkitMaskSize: 'cover',
-              }}
-            ></div>
+            <img src={card.imageUrl} alt={card.word} className="w-32 h-32 object-contain rounded-lg" />
             <p className="mt-4 text-xl font-semibold text-gray-800">{card.word}</p>
           </div>
         ))}
