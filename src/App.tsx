@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface Flashcard {
   word: string;
@@ -10,6 +10,21 @@ const App: React.FC = () => {
   const [iconUrl, setIconUrl] = useState<string | null>(null);
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
 
+  // Fetch flashcards from the backend
+  useEffect(() => {
+    const fetchFlashcards = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/flashcards');
+        const data = await response.json();
+        setFlashcards(data);
+      } catch (error) {
+        console.error('Error fetching flashcards:', error);
+      }
+    };
+
+    fetchFlashcards();
+  }, []);
+
   const handleSearch = async () => {
     if (!word.trim()) {
       alert('Please enter a word.');
@@ -17,12 +32,10 @@ const App: React.FC = () => {
     }
 
     try {
-      // Fetch icons related to the search term from Iconify API
       const response = await fetch(`https://api.iconify.design/search?query=${encodeURIComponent(word.toLowerCase())}`);
       if (response.ok) {
         const data = await response.json();
         if (data.icons && data.icons.length > 0) {
-          // Use the first matching icon
           const iconName = data.icons[0];
           const iconUrl = `https://api.iconify.design/${iconName}.svg`;
           setIconUrl(iconUrl);
@@ -41,14 +54,28 @@ const App: React.FC = () => {
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (iconUrl) {
-      setFlashcards((prevFlashcards) => [
-        { word, iconUrl },
-        ...prevFlashcards,
-      ]);
-      setWord('');
-      setIconUrl(null);
+      try {
+        const newFlashcard = { word, iconUrl };
+        const response = await fetch('http://localhost:5000/flashcards', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newFlashcard),
+        });
+
+        if (response.ok) {
+          const savedFlashcard = await response.json();
+          setFlashcards((prevFlashcards) => [savedFlashcard, ...prevFlashcards]);
+          setWord('');
+          setIconUrl(null);
+        } else {
+          alert('Failed to save flashcard.');
+        }
+      } catch (error) {
+        console.error('Error saving flashcard:', error);
+        alert('Failed to save flashcard.');
+      }
     }
   };
 
@@ -97,15 +124,6 @@ const App: React.FC = () => {
         </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 w-full max-w-4xl">
-        {iconUrl && (
-          <div className="flex flex-col items-center justify-center w-full sm:w-56 h-56 bg-white rounded-3xl shadow-lg p-4">
-            <div
-              className="w-32 h-32 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full flex items-center justify-center"
-              style={{ maskImage: `url(${iconUrl})`, maskSize: 'cover', WebkitMaskImage: `url(${iconUrl})`, WebkitMaskSize: 'cover' }}
-            ></div>
-            <p className="mt-4 text-xl font-semibold text-gray-800">{word}</p>
-          </div>
-        )}
         {flashcards.map((card, index) => (
           <div
             key={index}
@@ -113,7 +131,12 @@ const App: React.FC = () => {
           >
             <div
               className="w-32 h-32 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full flex items-center justify-center"
-              style={{ maskImage: `url(${card.iconUrl})`, maskSize: 'cover', WebkitMaskImage: `url(${card.iconUrl})`, WebkitMaskSize: 'cover' }}
+              style={{
+                maskImage: `url(${card.iconUrl})`,
+                maskSize: 'cover',
+                WebkitMaskImage: `url(${card.iconUrl})`,
+                WebkitMaskSize: 'cover',
+              }}
             ></div>
             <p className="mt-4 text-xl font-semibold text-gray-800">{card.word}</p>
           </div>
