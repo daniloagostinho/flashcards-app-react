@@ -37,7 +37,7 @@ const App: React.FC = () => {
         if (data.icons && data.icons.length > 0) {
           const iconName = data.icons[0];
           const iconUrl = `https://api.iconify.design/${iconName}.svg`;
-          setIconUrl(iconUrl);
+          setIconUrl(iconUrl); // Set the icon URL immediately
         } else {
           alert('No icon found for this word. Try another.');
           setIconUrl(null);
@@ -53,7 +53,7 @@ const App: React.FC = () => {
     }
   };
 
-  const handleConfirm = async () => {
+  const handleSave = async () => {
     if (iconUrl) {
       try {
         const newFlashcard = { word, iconUrl };
@@ -111,7 +111,7 @@ const App: React.FC = () => {
           Search Icon
         </button>
         <button
-          onClick={handleConfirm}
+          onClick={handleSave}
           disabled={!iconUrl}
           className={`px-6 py-3 rounded-xl text-lg font-semibold ${
             iconUrl
@@ -119,10 +119,24 @@ const App: React.FC = () => {
               : 'bg-gray-400 cursor-not-allowed'
           }`}
         >
-          Confirm
+          Save
         </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 w-full max-w-4xl">
+        {iconUrl && (
+          <div className="flex flex-col items-center justify-center w-full sm:w-56 h-56 bg-white rounded-3xl shadow-lg p-4">
+            <div
+              className="w-32 h-32 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full flex items-center justify-center"
+              style={{
+                maskImage: `url(${iconUrl})`,
+                maskSize: 'cover',
+                WebkitMaskImage: `url(${iconUrl})`,
+                WebkitMaskSize: 'cover',
+              }}
+            ></div>
+            <p className="mt-4 text-xl font-semibold text-gray-800">{word}</p>
+          </div>
+        )}
         {flashcards.map((card, index) => (
           <div
             key={index}
