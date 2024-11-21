@@ -10,7 +10,6 @@ const App: React.FC = () => {
   const [iconUrl, setIconUrl] = useState<string | null>(null);
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
 
-  // Fetch flashcards from the backend
   useEffect(() => {
     const fetchFlashcards = async () => {
       try {
