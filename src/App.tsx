@@ -13,7 +13,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchFlashcards = async () => {
       try {
-        const response = await fetch('http://localhost:5000/flashcards');
+        const response = await fetch('https://backend-flashcards-app.vercel.app/flashcards');
         const data = await response.json();
         setFlashcards(data);
       } catch (error) {
@@ -57,7 +57,7 @@ const App: React.FC = () => {
     if (iconUrl) {
       try {
         const newFlashcard = { word, iconUrl };
-        const response = await fetch('http://localhost:5000/flashcards', {
+        const response = await fetch('https://backend-flashcards-app.vercel.app/flashcards', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newFlashcard),
