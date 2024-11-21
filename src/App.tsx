@@ -35,7 +35,7 @@ const App: React.FC = () => {
         `https://api.unsplash.com/search/photos?query=${encodeURIComponent(word.toLowerCase())}&per_page=1`,
         {
           headers: {
-            Authorization: `78x0tju6NTslUCiEUN93M3nijFQO0sndMLQBIQ0Gfxo`, // Replace with your Unsplash API key
+            Authorization: ` Client-ID 78x0tju6NTslUCiEUN93M3nijFQO0sndMLQBIQ0Gfxo`, // Replace with your Unsplash API key
           },
         }
       );
