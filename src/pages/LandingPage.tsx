@@ -1,5 +1,8 @@
 import React from 'react';
 
+import { FaBrain, FaBookOpen, FaMobileAlt } from 'react-icons/fa';
+
+
 const LandingPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 text-gray-800 font-poppins">
@@ -53,34 +56,33 @@ const LandingPage: React.FC = () => {
                     Why Choose FlashLearn?
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    {/* Boost Memory */}
                     <div className="p-6 bg-blue-50 rounded-lg shadow-md">
-                        <img
-                            src="https://source.unsplash.com/100x100/?memory"
-                            alt="Memory"
-                            className="mx-auto mb-4"
-                        />
+                        <div className="flex justify-center mb-4 text-blue-500 text-5xl">
+                            <FaBrain />
+                        </div>
                         <h4 className="text-xl font-bold text-blue-700">Boost Memory</h4>
                         <p className="text-gray-600">
                             Strengthen your memory by associating words with vivid images.
                         </p>
                     </div>
+
+                    {/* Interactive Learning */}
                     <div className="p-6 bg-blue-50 rounded-lg shadow-md">
-                        <img
-                            src="https://source.unsplash.com/100x100/?language"
-                            alt="Language"
-                            className="mx-auto mb-4"
-                        />
+                        <div className="flex justify-center mb-4 text-blue-500 text-5xl">
+                            <FaBookOpen />
+                        </div>
                         <h4 className="text-xl font-bold text-blue-700">Interactive Learning</h4>
                         <p className="text-gray-600">
                             Learn interactively with flashcards and engaging visuals.
                         </p>
                     </div>
+
+                    {/* Learn Anywhere */}
                     <div className="p-6 bg-blue-50 rounded-lg shadow-md">
-                        <img
-                            src="https://source.unsplash.com/100x100/?mobile"
-                            alt="Responsive"
-                            className="mx-auto mb-4"
-                        />
+                        <div className="flex justify-center mb-4 text-blue-500 text-5xl">
+                            <FaMobileAlt />
+                        </div>
                         <h4 className="text-xl font-bold text-blue-700">Learn Anywhere</h4>
                         <p className="text-gray-600">
                             Accessible on mobile and desktop for learning on the go.
@@ -88,7 +90,6 @@ const LandingPage: React.FC = () => {
                     </div>
                 </div>
             </section>
-
             {/* Footer */}
             <footer className="bg-blue-600 text-white text-center py-4">
                 <p>&copy; 2024 FlashLearn. All rights reserved.</p>
