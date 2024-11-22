@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 
 interface Flashcard {
   word: string;
@@ -24,6 +25,11 @@ const App: React.FC = () => {
     fetchFlashcards();
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    Navigate({to: '/login'});
+  };
+  
   const handleSearch = async () => {
     if (!word.trim()) {
       alert('Por favor, introduza uma word.');
@@ -87,12 +93,14 @@ const App: React.FC = () => {
       setIconUrl(null);
     }
   };
+  
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4 sm:p-6 font-poppins text-gray-800">
       <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-clip-text">
         🎮 English Learning Game 🎉
       </h1>
+      <button onClick={handleLogout}></button>
       <input
         type="text"
         placeholder="Type a word (e.g., car)"

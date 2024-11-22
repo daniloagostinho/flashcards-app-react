@@ -11,7 +11,6 @@ const LoginPage: React.FC = () => {
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
 
         try {
             const response = await fetch('https://backend-flashcards-app.vercel.app/login', {
@@ -22,20 +21,15 @@ const LoginPage: React.FC = () => {
 
             if (response.ok) {
                 const data = await response.json();
+                localStorage.setItem('token', data.token); // Save token to local storage
                 toast.success('Login successful! Redirecting...', {
                     position: 'top-center',
                     autoClose: 3000,
                 });
 
-                // Save token in localStorage
-                localStorage.setItem('token', data.token);
-
                 setTimeout(() => {
                     navigate('/app');
                 }, 3000);
-
-                setEmail('');
-                setPassword('');
             } else {
                 const errorData = await response.json();
                 toast.error(errorData.error || 'Failed to log in', {
@@ -47,10 +41,9 @@ const LoginPage: React.FC = () => {
             toast.error('An error occurred. Please try again.', {
                 position: 'top-center',
             });
-        } finally {
-            setLoading(false);
         }
     };
+
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 p-6">
@@ -89,8 +82,8 @@ const LoginPage: React.FC = () => {
                 <button
                     type="submit"
                     className={`w-full py-3 rounded-lg text-lg font-semibold flex items-center justify-center ${loading
-                            ? 'bg-blue-400 cursor-not-allowed'
-                            : 'bg-blue-500 hover:bg-blue-600 text-white'
+                        ? 'bg-blue-400 cursor-not-allowed'
+                        : 'bg-blue-500 hover:bg-blue-600 text-white'
                         }`}
                     disabled={loading}
                 >

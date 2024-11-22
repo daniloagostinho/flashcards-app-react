@@ -5,14 +5,16 @@ import App from '../App';
 import SignUpPage from './SignUpPage';
 import LoginPage from './LoginPage';
 
+import ProtectedRoute from '../guards/ProtectedRoute';
+
 const Main: React.FC = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/app" element={<App />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage/>} />
+        <Route path="/app" element={<ProtectedRoute element={<App />} />} />
       </Routes>
     </Router>
   );
