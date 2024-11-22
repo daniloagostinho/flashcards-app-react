@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import { ClipLoader } from 'react-spinners'; // React Spinner
 
 const SignUpPage: React.FC = () => {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false); // Loading state
   const navigate = useNavigate();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true); // Start loading
 
     try {
       const response = await fetch('https://backend-flashcards-app.vercel.app/signup', {
@@ -27,12 +30,10 @@ const SignUpPage: React.FC = () => {
           autoClose: 10000,
         });
 
-        // Redirect after 10 seconds
         setTimeout(() => {
           navigate('/login');
         }, 10000);
 
-        // Clear the form
         setName('');
         setEmail('');
         setPassword('');
@@ -47,6 +48,8 @@ const SignUpPage: React.FC = () => {
       toast.error('An error occurred. Please try again.', {
         position: "top-center",
       });
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -99,9 +102,18 @@ const SignUpPage: React.FC = () => {
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-600"
+          className={`w-full py-3 rounded-lg text-lg font-semibold flex items-center justify-center ${
+            loading
+              ? 'bg-blue-400 cursor-not-allowed'
+              : 'bg-blue-500 hover:bg-blue-600 text-white'
+          }`}
+          disabled={loading}
         >
-          Sign Up
+          {loading ? (
+            <ClipLoader color="#ffffff" size={20} />
+          ) : (
+            'Sign Up'
+          )}
         </button>
       </form>
     </div>
