@@ -92,7 +92,7 @@ const LandingPage: React.FC = () => {
             </section>
             {/* Footer */}
             <footer className="bg-blue-600 text-white text-center py-4">
-                <p>&copy; 2024 FlashLearn. All rights reserved.</p>
+                <p>&copy; 2024 FlashLearn. Created by Danilo Agostinho. All rights reserved.</p>
             </footer>
         </div>
     );
