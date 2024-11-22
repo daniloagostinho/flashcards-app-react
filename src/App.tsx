@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 interface Flashcard {
-  palavra: string;
+  word: string;
   iconUrl: string;
 }
 
@@ -26,7 +26,7 @@ const App: React.FC = () => {
 
   const handleSearch = async () => {
     if (!word.trim()) {
-      alert('Por favor, introduza uma palavra.');
+      alert('Por favor, introduza uma word.');
       return;
     }
 
@@ -58,7 +58,7 @@ const App: React.FC = () => {
   const handleSave = async () => {
     if (iconUrl) {
       try {
-        const newFlashcard = { palavra: word, iconUrl };
+        const newFlashcard = { word: word, iconUrl };
         const response = await fetch('https://backend-flashcards-app.vercel.app/flashcards', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -151,7 +151,7 @@ const App: React.FC = () => {
                 WebkitMaskSize: 'cover',
               }}
             ></div>
-            <p className="mt-4 text-xl font-semibold text-gray-800">{card.palavra}</p>
+            <p className="mt-4 text-xl font-semibold text-gray-800">{card.word}</p>
           </div>
         ))}
       </div>
