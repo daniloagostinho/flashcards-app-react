@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 interface Flashcard {
-  word: string;
+  palavra: string;
   iconUrl: string;
 }
 
@@ -17,7 +17,7 @@ const App: React.FC = () => {
         const data = await response.json();
         setFlashcards(data);
       } catch (error) {
-        console.error('Error fetching flashcards:', error);
+        console.error('Erro ao buscar flashcards:', error);
       }
     };
 
@@ -26,29 +26,31 @@ const App: React.FC = () => {
 
   const handleSearch = async () => {
     if (!word.trim()) {
-      alert('Please enter a word.');
+      alert('Por favor, introduza uma palavra.');
       return;
     }
 
     try {
-      const response = await fetch(`https://api.iconify.design/search?query=${encodeURIComponent(word.toLowerCase())}`);
+      const response = await fetch(
+        `https://api.iconify.design/search?query=${encodeURIComponent(word.toLowerCase())}`
+      );
       if (response.ok) {
         const data = await response.json();
         if (data.icons && data.icons.length > 0) {
           const iconName = data.icons[0];
           const iconUrl = `https://api.iconify.design/${iconName}.svg`;
-          setIconUrl(iconUrl); // Set the icon URL immediately
+          setIconUrl(iconUrl); // Define o URL do ícone imediatamente
         } else {
-          alert('No icon found for this word. Try another.');
+          alert('Nenhum ícone encontrado para esta palavra. Tente outro.');
           setIconUrl(null);
         }
       } else {
-        alert('Failed to fetch icon. Please try again.');
+        alert('Falha ao obter o ícone. Por favor, tente novamente.');
         setIconUrl(null);
       }
     } catch (error) {
-      console.error('Error fetching icon:', error);
-      alert('Failed to fetch icon. Please try again.');
+      console.error('Erro ao buscar o ícone:', error);
+      alert('Falha ao obter o ícone. Por favor, tente novamente.');
       setIconUrl(null);
     }
   };
@@ -56,7 +58,7 @@ const App: React.FC = () => {
   const handleSave = async () => {
     if (iconUrl) {
       try {
-        const newFlashcard = { word, iconUrl };
+        const newFlashcard = { palavra: word, iconUrl };
         const response = await fetch('https://backend-flashcards-app.vercel.app/flashcards', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -69,11 +71,11 @@ const App: React.FC = () => {
           setWord('');
           setIconUrl(null);
         } else {
-          alert('Failed to save flashcard.');
+          alert('Falha ao salvar o flashcard.');
         }
       } catch (error) {
-        console.error('Error saving flashcard:', error);
-        alert('Failed to save flashcard.');
+        console.error('Erro ao guardar o flashcard:', error);
+        alert('Falha ao salvar o flashcard.');
       }
     }
   };
@@ -87,8 +89,8 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 p-4 sm:p-6 font-poppins text-gray-800">
-      <h1 className="text-4xl font-bold mb-6 shadow-sm text-center">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4 sm:p-6 font-poppins text-gray-800">
+      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-clip-text">
         🎮 English Learning Game 🎉
       </h1>
       <input
@@ -96,28 +98,26 @@ const App: React.FC = () => {
         placeholder="Type a word (e.g., car)"
         value={word}
         onChange={handleInputChange}
-        className="p-4 w-full sm:w-96 rounded-xl border border-gray-300 text-black text-lg mb-6 shadow-sm"
+        className="w-full sm:w-2/3 lg:w-1/2 h-16 px-6 text-2xl font-semibold text-gray-700 placeholder-gray-500 bg-white border-4 border-transparent rounded-full shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
       />
       <div className="flex flex-wrap gap-4 justify-center">
         <button
           onClick={handleSearch}
           disabled={!word.trim()}
-          className={`px-6 py-3 rounded-xl text-lg font-semibold ${
-            word.trim()
-              ? 'bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 shadow-sm'
-              : 'bg-gray-400 cursor-not-allowed'
-          }`}
+          className={`px-6 py-3 rounded-xl text-lg font-semibold flex items-center justify-center mt-4 ${word.trim()
+            ? 'bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 shadow-md text-white'
+            : 'bg-gray-400 cursor-not-allowed text-white'
+            }`}
         >
           Search Icon
         </button>
         <button
           onClick={handleSave}
           disabled={!iconUrl}
-          className={`px-6 py-3 rounded-xl text-lg font-semibold ${
-            iconUrl
-              ? 'bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 shadow-sm'
-              : 'bg-gray-400 cursor-not-allowed'
-          }`}
+          className={`px-6 py-3 rounded-xl text-lg font-semibold flex items-center justify-center mt-4 ${iconUrl
+            ? 'bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 shadow-md text-white'
+            : 'bg-gray-400 cursor-not-allowed text-white'
+            }`}
         >
           Save
         </button>
@@ -151,7 +151,7 @@ const App: React.FC = () => {
                 WebkitMaskSize: 'cover',
               }}
             ></div>
-            <p className="mt-4 text-xl font-semibold text-gray-800">{card.word}</p>
+            <p className="mt-4 text-xl font-semibold text-gray-800">{card.palavra}</p>
           </div>
         ))}
       </div>
