@@ -32,7 +32,7 @@ const FlashcardsList: React.FC = () => {
 
       if (response.ok) {
         const flashcardsData = await response.json();
-        setFlashcards(flashcardsData); // Atualiza os flashcards
+        setFlashcards(flashcardsData); // Atualiza os flashcards com múltiplos ícones por categoria
       } else {
         alert('Falha ao gerar flashcards.');
       }
