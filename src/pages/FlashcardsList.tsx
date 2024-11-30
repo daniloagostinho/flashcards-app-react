@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Importando o hook useNavigate
+import { FaSearch } from 'react-icons/fa'; // Importando o ícone de lupa
 
 interface Flashcard {
   word: string;
@@ -11,7 +12,7 @@ const FlashcardsList: React.FC = () => {
   const [categorias, setCategorias] = useState<string[]>([]); // Estado para armazenar as categorias
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  
+
   const navigate = useNavigate(); // Usando o hook useNavigate para navegação
 
   // Função para buscar os flashcards baseados nas categorias
@@ -68,7 +69,7 @@ const FlashcardsList: React.FC = () => {
       </h1>
 
       {/* Adicionar categorias */}
-      <div className="mb-6">
+      <div className="mb-6 flex items-center">
         <input
           type="text"
           placeholder="Add a category (e.g., animals)"
@@ -80,6 +81,18 @@ const FlashcardsList: React.FC = () => {
             }
           }}
         />
+
+        {/* Lupa para adicionar categoria */}
+        <button
+          onClick={() => {
+            const input = document.querySelector('input[type="text"]') as HTMLInputElement;
+            handleAddCategory(input.value);
+            input.value = ''; // Limpa o campo após adicionar
+          }}
+          className="ml-2 p-3 rounded-full bg-blue-500 text-white hover:bg-blue-600 focus:outline-none"
+        >
+          <FaSearch className="h-6 w-6" />
+        </button>
       </div>
 
       {/* Exibir categorias adicionadas */}
@@ -102,7 +115,7 @@ const FlashcardsList: React.FC = () => {
         className={`px-6 py-3 rounded-xl text-lg font-semibold flex items-center justify-center mt-4 ${categorias.length === 0 || isLoading
           ? 'bg-gray-400 cursor-not-allowed text-white'
           : 'bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 shadow-md text-white'
-        }`}
+          }`}
       >
         {isLoading ? 'Gerando...' : 'Gerar Flashcards'}
       </button>
@@ -128,7 +141,10 @@ const FlashcardsList: React.FC = () => {
             </div>
           ))
         ) : (
-          <p className="text-xl text-gray-700">Nenhum flashcard gerado ainda. Adicione categorias e gere-os.</p>
+          <p className="text-xl text-gray-700 w-full text-center">
+            Nenhum flashcard gerado ainda. Adicione categorias e gere-os.
+          </p>
+
         )}
       </div>
     </div>
