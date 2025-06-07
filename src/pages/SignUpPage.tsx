@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners'; // React Spinner
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SignUpPage: React.FC = () => {
   const [name, setName] = useState<string>('');
@@ -22,6 +22,7 @@ const SignUpPage: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ name, email, password }),
+        mode: 'cors',
       });
 
       if (response.ok) {
