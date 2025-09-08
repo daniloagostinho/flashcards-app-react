@@ -53,16 +53,6 @@ const App: React.FC = () => {
             <div className="text-sm opacity-90 mt-2">Pratique tradução para inglês</div>
           </button>
 
-          {/* Flashcards Prontos */}
-          <button
-            onClick={() => navigate('/flashcards')}
-            className="group flex flex-col items-center justify-center py-8 px-6 text-xl font-semibold text-white bg-gradient-to-r from-orange-500 to-orange-400 hover:from-orange-600 hover:to-orange-500 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105"
-          >
-            <div className="text-4xl mb-3">🎯</div>
-            <div>Flashcards Prontos</div>
-            <div className="text-sm opacity-90 mt-2">Gerar por categorias (EN→PT)</div>
-          </button>
-
           {/* Meus Flashcards */}
           <button
             onClick={() => navigate('/my-flashcards')}
