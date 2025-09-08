@@ -19,4 +19,5 @@ class Flashcard(Base):
     id = Column(Integer, primary_key=True, index=True)
     word = Column(String(100), nullable=False)
     translation = Column(Text, nullable=False)
+    direction = Column(String(20), nullable=False, default="en_to_pt")  # en_to_pt ou pt_to_en
     created_at = Column(DateTime, default=datetime.utcnow)

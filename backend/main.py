@@ -69,14 +69,18 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 # Função de tradução para flashcards de vocabulário
-async def get_translation(word: str) -> str:
+async def get_translation(word: str, direction: str = "en_to_pt") -> str:
     """
     Sistema de tradução automática para flashcards de vocabulário.
-    Traduz palavras do inglês para português usando um serviço confiável.
+    Traduz palavras entre inglês e português usando um serviço confiável.
+    
+    Args:
+        word: Palavra a ser traduzida
+        direction: "en_to_pt" para inglês→português ou "pt_to_en" para português→inglês
     """
     
-    # Dicionário de traduções comuns para melhor performance
-    translations = {
+    # Dicionários de traduções comuns para melhor performance
+    en_to_pt = {
         'study': 'estudar',
         'enjoy': 'apreciar, gostar',
         'love': 'amar',
@@ -214,14 +218,22 @@ async def get_translation(word: str) -> str:
         'december': 'dezembro'
     }
     
-    # Buscar tradução no dicionário
-    translation = translations.get(word.lower(), word)
+    # Dicionário reverso (português → inglês)
+    pt_to_en = {v: k for k, v in en_to_pt.items()}
+    
+    # Buscar tradução no dicionário apropriado
+    if direction == "en_to_pt":
+        translation = en_to_pt.get(word.lower(), word)
+        langpair = "en|pt"
+    else:  # pt_to_en
+        translation = pt_to_en.get(word.lower(), word)
+        langpair = "pt|en"
     
     # Se não encontrou no dicionário, usar um serviço de tradução online
     if translation == word:
         try:
             # Usar MyMemory API (gratuita e confiável)
-            url = f"https://api.mymemory.translated.net/get?q={word}&langpair=en|pt"
+            url = f"https://api.mymemory.translated.net/get?q={word}&langpair={langpair}"
             response = requests.get(url, timeout=5)
             if response.status_code == 200:
                 data = response.json()
@@ -314,18 +326,20 @@ async def get_flashcards(db: Session = Depends(get_db)):
         FlashcardResponse(
             id=card.id,
             word=card.word,
-            translation=card.translation
+            translation=card.translation,
+            direction=card.direction
         ) for card in flashcards
     ]
 
 @app.post("/flashcards", response_model=FlashcardResponse)
 async def create_flashcard(flashcard: FlashcardCreate, db: Session = Depends(get_db)):
     # Gerar tradução para a palavra
-    translation = await get_translation(flashcard.word)
+    translation = await get_translation(flashcard.word, flashcard.direction)
     
     db_flashcard = Flashcard(
         word=flashcard.word,
-        translation=translation
+        translation=translation,
+        direction=flashcard.direction
     )
     db.add(db_flashcard)
     db.commit()
@@ -333,7 +347,8 @@ async def create_flashcard(flashcard: FlashcardCreate, db: Session = Depends(get
     return FlashcardResponse(
         id=db_flashcard.id,
         word=db_flashcard.word,
-        translation=db_flashcard.translation
+        translation=db_flashcard.translation,
+        direction=db_flashcard.direction
     )
 
 @app.delete("/flashcards/{flashcard_id}")
@@ -350,15 +365,15 @@ async def delete_flashcard(flashcard_id: int, db: Session = Depends(get_db)):
     return {"message": "Flashcard deletado com sucesso"}
 
 @app.get("/translation/{word}")
-async def get_translation_endpoint(word: str):
+async def get_translation_endpoint(word: str, direction: str = "en_to_pt"):
     """
     Endpoint para buscar tradução de uma palavra específica
     """
     try:
-        translation = await get_translation(word)
-        return {"word": word, "translation": translation}
+        translation = await get_translation(word, direction)
+        return {"word": word, "translation": translation, "direction": direction}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar imagem: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar tradução: {str(e)}")
 
 @app.post("/flashcards-gerados", response_model=list[FlashcardResponse])
 async def generate_flashcards(categories: CategoryRequest, db: Session = Depends(get_db)):
@@ -385,12 +400,13 @@ async def generate_flashcards(categories: CategoryRequest, db: Session = Depends
         words = sample_words.get(category.lower(), [category + "1", category + "2", category + "3"])
         
         for word in words[:3]:  # Limitar a 3 flashcards por categoria
-            # Usar o sistema de tradução
-            translation = await get_translation(word)
+            # Usar o sistema de tradução (sempre inglês → português para geração automática)
+            translation = await get_translation(word, "en_to_pt")
             
             db_flashcard = Flashcard(
                 word=word,
-                translation=translation
+                translation=translation,
+                direction="en_to_pt"
             )
             db.add(db_flashcard)
             generated_flashcards.append(db_flashcard)
@@ -405,7 +421,8 @@ async def generate_flashcards(categories: CategoryRequest, db: Session = Depends
         FlashcardResponse(
             id=card.id,
             word=card.word,
-            translation=card.translation
+            translation=card.translation,
+            direction=card.direction
         ) for card in generated_flashcards
     ]
 

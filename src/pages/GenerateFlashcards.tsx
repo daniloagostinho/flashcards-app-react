@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Importando o hook useNavigate
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom'; // Importando o hook useNavigate
 
 interface Flashcard {
   id: number;
   word: string;
   translation: string;
+  direction: string;
 }
 
 const GenerateFlashcards: React.FC = () => {
-
+    const [searchParams] = useSearchParams();
+    const direction = searchParams.get('direction') || 'en_to_pt';
+    
     const [word, setWord] = useState<string>('');
     const [translation, setTranslation] = useState<string | null>(null);
 
@@ -26,8 +29,8 @@ const GenerateFlashcards: React.FC = () => {
         }
 
         try {
-            // Usar o sistema de tradução do backend
-            const response = await fetch(`http://localhost:8000/translation/${encodeURIComponent(word.toLowerCase())}`);
+            // Usar o sistema de tradução do backend com direção
+            const response = await fetch(`http://localhost:8000/translation/${encodeURIComponent(word.toLowerCase())}?direction=${direction}`);
             if (response.ok) {
                 const data = await response.json();
                 setTranslation(data.translation);
@@ -45,7 +48,7 @@ const GenerateFlashcards: React.FC = () => {
     const handleSave = async () => {
         if (translation) {
             try {
-                const newFlashcard = { word: word };
+                const newFlashcard = { word: word, direction: direction };
                 const response = await fetch('http://localhost:8000/flashcards', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -103,14 +106,16 @@ const GenerateFlashcards: React.FC = () => {
             {/* Conteúdo principal */}
             <div className="flex flex-col justify-center items-center min-h-[calc(100vh-120px)]">
                 <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-center">
-                    Crie seus flashcards personalizados
+                    {direction === 'en_to_pt' ? '🇺🇸➡️🇧🇷 Inglês → Português' : '🇧🇷➡️🇺🇸 Português → Inglês'}
                 </h2>
 
                 {/* Campo de busca */}
                 <div className="w-full max-w-2xl mb-8">
                     <input
                         type="text"
-                        placeholder="Digite uma palavra em inglês (ex: car, house, beautiful)"
+                        placeholder={direction === 'en_to_pt' 
+                            ? "Digite uma palavra em inglês (ex: car, house, beautiful)" 
+                            : "Digite uma palavra em português (ex: carro, casa, bonito)"}
                         value={word}
                         onChange={handleInputChange}
                         className="w-full h-16 px-6 text-xl font-semibold text-gray-700 placeholder-gray-500 bg-white border-4 border-transparent rounded-full shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"

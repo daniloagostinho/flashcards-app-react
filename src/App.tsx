@@ -32,32 +32,45 @@ const App: React.FC = () => {
         <p className="text-lg text-gray-600 mb-12 text-center">Choose a type of feature to learn English</p>
 
         {/* Botões organizados em grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl">
+          {/* Inglês → Português */}
           <button
-            onClick={() => navigate('/generate')}
+            onClick={() => navigate('/generate?direction=en_to_pt')}
             className="group flex flex-col items-center justify-center py-8 px-6 text-xl font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105"
           >
-            <div className="text-4xl mb-3">✨</div>
-            <div>Gerar Flashcards</div>
-            <div className="text-sm opacity-90 mt-2">Criar flashcards personalizados</div>
+            <div className="text-4xl mb-3">🇺🇸➡️🇧🇷</div>
+            <div>Inglês → Português</div>
+            <div className="text-sm opacity-90 mt-2">Aprenda palavras em inglês</div>
           </button>
 
+          {/* Português → Inglês */}
+          <button
+            onClick={() => navigate('/generate?direction=pt_to_en')}
+            className="group flex flex-col items-center justify-center py-8 px-6 text-xl font-semibold text-white bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105"
+          >
+            <div className="text-4xl mb-3">🇧🇷➡️🇺🇸</div>
+            <div>Português → Inglês</div>
+            <div className="text-sm opacity-90 mt-2">Pratique tradução para inglês</div>
+          </button>
+
+          {/* Flashcards Prontos */}
           <button
             onClick={() => navigate('/flashcards')}
-            className="group flex flex-col items-center justify-center py-8 px-6 text-xl font-semibold text-white bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105"
+            className="group flex flex-col items-center justify-center py-8 px-6 text-xl font-semibold text-white bg-gradient-to-r from-orange-500 to-orange-400 hover:from-orange-600 hover:to-orange-500 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105"
           >
             <div className="text-4xl mb-3">🎯</div>
             <div>Flashcards Prontos</div>
-            <div className="text-sm opacity-90 mt-2">Gerar por categorias</div>
+            <div className="text-sm opacity-90 mt-2">Gerar por categorias (EN→PT)</div>
           </button>
 
+          {/* Meus Flashcards */}
           <button
             onClick={() => navigate('/my-flashcards')}
-            className="group flex flex-col items-center justify-center py-8 px-6 text-xl font-semibold text-white bg-gradient-to-r from-purple-500 to-purple-400 hover:from-purple-600 hover:to-purple-500 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 md:col-span-2"
+            className="group flex flex-col items-center justify-center py-8 px-6 text-xl font-semibold text-white bg-gradient-to-r from-purple-500 to-purple-400 hover:from-purple-600 hover:to-purple-500 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105"
           >
             <div className="text-4xl mb-3">📖</div>
-            <div>Ver meus Flashcards salvos</div>
-            <div className="text-sm opacity-90 mt-2">Visualizar e gerenciar seus flashcards</div>
+            <div>Meus Flashcards</div>
+            <div className="text-sm opacity-90 mt-2">Visualizar e gerenciar</div>
           </button>
         </div>
       </div>

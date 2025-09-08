@@ -20,6 +20,7 @@ class UserResponse(UserBase):
 
 class FlashcardBase(BaseModel):
     word: str
+    direction: str = "en_to_pt"  # en_to_pt ou pt_to_en
 
 class FlashcardCreate(FlashcardBase):
     pass
@@ -28,6 +29,7 @@ class FlashcardResponse(BaseModel):
     id: int
     word: str
     translation: str
+    direction: str
     
     class Config:
         from_attributes = True

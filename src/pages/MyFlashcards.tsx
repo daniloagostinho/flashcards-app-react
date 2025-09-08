@@ -5,6 +5,7 @@ interface Flashcard {
   id: number;
   word: string;
   translation: string;
+  direction: string;
 }
 
 const MyFlashcards: React.FC = () => {
@@ -128,10 +129,13 @@ const MyFlashcards: React.FC = () => {
                     ×
                   </button>
                   <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
-                    <div className="text-4xl">📚</div>
+                    <div className="text-4xl">{card.direction === 'en_to_pt' ? '🇺🇸➡️🇧🇷' : '🇧🇷➡️🇺🇸'}</div>
                   </div>
                   <p className="mt-4 text-lg font-semibold text-gray-800 text-center">{card.word}</p>
                   <p className="text-base text-blue-600 font-semibold mt-2 text-center">{card.translation}</p>
+                  <p className="text-xs text-gray-500 mt-1 text-center">
+                    {card.direction === 'en_to_pt' ? 'Inglês → Português' : 'Português → Inglês'}
+                  </p>
                 </div>
               ))}
             </div>
