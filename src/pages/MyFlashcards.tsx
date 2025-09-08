@@ -37,13 +37,11 @@ const MyFlashcards: React.FC = () => {
 
         if (response.ok) {
           setFlashcards(flashcards.filter(card => card.id !== id));
-          alert('Flashcard deletado com sucesso!');
         } else {
           alert('Falha ao deletar o flashcard.');
         }
       } catch (error) {
         console.error('Erro ao deletar flashcard:', error);
-        alert('Erro ao deletar flashcard.');
       }
     }
   };

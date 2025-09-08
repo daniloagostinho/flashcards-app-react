@@ -55,9 +55,7 @@ const GenerateFlashcards: React.FC = () => {
                 if (response.ok) {
                     setWord('');
                     setTranslation(null);
-                    alert('Flashcard salvo com sucesso!');
                 } else {
-                    alert('Falha ao salvar o flashcard.');
                 }
             } catch (error) {
                 console.error('Erro ao guardar o flashcard:', error);
