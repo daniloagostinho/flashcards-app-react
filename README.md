@@ -1,6 +1,41 @@
-# Getting Started with Create React App
+# 📚 Flashcards App - English Learning
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Um aplicativo completo para aprender inglês através de flashcards com tradução automática.
+
+## 🚀 Início Rápido
+
+### Opção 1: Script Automático (Recomendado)
+```bash
+# Iniciar frontend + backend
+./start.sh
+
+# Parar ambos os servidores
+./stop.sh
+```
+
+### Opção 2: Manual
+```bash
+# Terminal 1 - Backend
+cd backend
+source venv/bin/activate
+python3 main.py
+
+# Terminal 2 - Frontend
+npm start
+```
+
+## 🌐 URLs
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **Documentação API**: http://localhost:8000/docs
+
+## 📋 Funcionalidades
+- ✅ Autenticação de usuários
+- ✅ Geração de flashcards personalizados
+- ✅ Tradução automática (Inglês → Português)
+- ✅ Geração por categorias
+- ✅ Gerenciamento de flashcards salvos
+- ✅ Interface responsiva e intuitiva
 
 ## Available Scripts
 
