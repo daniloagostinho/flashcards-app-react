@@ -81,18 +81,23 @@ const MyFlashcards: React.FC = () => {
 
       {/* Conteúdo principal */}
       <div className="flex flex-col items-center min-h-[calc(100vh-120px)]">
-        <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center">
-          Seus flashcards salvos
-        </h2>
+        {/* Título e botão só aparecem quando há flashcards */}
+        {!isLoading && flashcards.length > 0 && (
+          <>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center">
+              Seus flashcards salvos
+            </h2>
 
-        {/* Botão de atualizar */}
-        <button
-          onClick={loadFlashcards}
-          className="mb-8 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200 flex items-center space-x-2"
-        >
-          <span>🔄</span>
-          <span>Atualizar</span>
-        </button>
+            {/* Botão de atualizar */}
+            <button
+              onClick={loadFlashcards}
+              className="mb-8 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200 flex items-center space-x-2"
+            >
+              <span>🔄</span>
+              <span>Atualizar</span>
+            </button>
+          </>
+        )}
 
         {/* Loading state */}
         {isLoading && (
