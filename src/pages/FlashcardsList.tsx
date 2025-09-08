@@ -25,7 +25,7 @@ const FlashcardsList: React.FC = () => {
     setIsLoading(true); // Inicia o loading
 
     try {
-      const response = await fetch('https://backend-flashcards-app.vercel.app/flashcards-gerados', {
+      const response = await fetch('http://localhost:8000/flashcards-gerados', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ categorias }),

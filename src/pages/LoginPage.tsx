@@ -13,7 +13,7 @@ const LoginPage: React.FC = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('https://backend-flashcards-app.vercel.app/login', {
+            const response = await fetch('http://localhost:8000/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
