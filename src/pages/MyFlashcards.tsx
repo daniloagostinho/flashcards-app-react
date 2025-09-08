@@ -28,6 +28,16 @@ const MyFlashcards: React.FC = () => {
     }
   };
 
+  // Organizar flashcards por direção
+  const getFlashcardsByDirection = (direction: string) => {
+    return flashcards.filter(card => card.direction === direction);
+  };
+
+  // Contar flashcards por direção
+  const getCountByDirection = (direction: string) => {
+    return flashcards.filter(card => card.direction === direction).length;
+  };
+
   // Deletar flashcard
   const handleDelete = async (id: number) => {
     if (window.confirm('Tem certeza que deseja deletar este flashcard?')) {
@@ -106,7 +116,7 @@ const MyFlashcards: React.FC = () => {
           </div>
         )}
 
-        {/* Lista de flashcards */}
+        {/* Lista de flashcards organizados por categorias */}
         {!isLoading && flashcards.length > 0 && (
           <div className="w-full max-w-7xl">
             <div className="flex justify-between items-center mb-6">
@@ -115,30 +125,77 @@ const MyFlashcards: React.FC = () => {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-              {flashcards.map((card) => (
-                <div
-                  key={card.id}
-                  className="relative flex flex-col items-center justify-center w-full h-48 bg-white rounded-3xl shadow-lg p-4 transform hover:scale-105 transition-all duration-300"
-                >
-                  <button
-                    onClick={() => handleDelete(card.id)}
-                    className="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-200"
-                    title="Deletar flashcard"
-                  >
-                    ×
-                  </button>
-                  <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
-                    <div className="text-4xl">{card.direction === 'en_to_pt' ? '🇺🇸➡️🇧🇷' : '🇧🇷➡️🇺🇸'}</div>
-                  </div>
-                  <p className="mt-4 text-lg font-semibold text-gray-800 text-center">{card.word}</p>
-                  <p className="text-base text-blue-600 font-semibold mt-2 text-center">{card.translation}</p>
-                  <p className="text-xs text-gray-500 mt-1 text-center">
-                    {card.direction === 'en_to_pt' ? 'Inglês → Português' : 'Português → Inglês'}
-                  </p>
+            {/* Categoria: Inglês → Português */}
+            {getCountByDirection('en_to_pt') > 0 && (
+              <div className="mb-12">
+                <div className="flex items-center mb-6">
+                  <div className="text-3xl mr-3">🇺🇸➡️🇧🇷</div>
+                  <h3 className="text-2xl font-bold text-gray-800">Inglês → Português</h3>
+                  <span className="ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+                    {getCountByDirection('en_to_pt')} flashcards
+                  </span>
                 </div>
-              ))}
-            </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                  {getFlashcardsByDirection('en_to_pt').map((card) => (
+                    <div
+                      key={card.id}
+                      className="relative flex flex-col items-center justify-center w-full h-48 bg-white rounded-3xl shadow-lg p-4 transform hover:scale-105 transition-all duration-300"
+                    >
+                      <button
+                        onClick={() => handleDelete(card.id)}
+                        className="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-200"
+                        title="Deletar flashcard"
+                      >
+                        ×
+                      </button>
+                      <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
+                        <div className="text-4xl">🇺🇸➡️🇧🇷</div>
+                      </div>
+                      <p className="mt-4 text-lg font-semibold text-gray-800 text-center">{card.word}</p>
+                      <p className="text-base text-blue-600 font-semibold mt-2 text-center">{card.translation}</p>
+                      <p className="text-xs text-gray-500 mt-1 text-center">Inglês → Português</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Categoria: Português → Inglês */}
+            {getCountByDirection('pt_to_en') > 0 && (
+              <div className="mb-12">
+                <div className="flex items-center mb-6">
+                  <div className="text-3xl mr-3">🇧🇷➡️🇺🇸</div>
+                  <h3 className="text-2xl font-bold text-gray-800">Português → Inglês</h3>
+                  <span className="ml-4 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                    {getCountByDirection('pt_to_en')} flashcards
+                  </span>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                  {getFlashcardsByDirection('pt_to_en').map((card) => (
+                    <div
+                      key={card.id}
+                      className="relative flex flex-col items-center justify-center w-full h-48 bg-white rounded-3xl shadow-lg p-4 transform hover:scale-105 transition-all duration-300"
+                    >
+                      <button
+                        onClick={() => handleDelete(card.id)}
+                        className="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-200"
+                        title="Deletar flashcard"
+                      >
+                        ×
+                      </button>
+                      <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-green-100 to-blue-100">
+                        <div className="text-4xl">🇧🇷➡️🇺🇸</div>
+                      </div>
+                      <p className="mt-4 text-lg font-semibold text-gray-800 text-center">{card.word}</p>
+                      <p className="text-base text-green-600 font-semibold mt-2 text-center">{card.translation}</p>
+                      <p className="text-xs text-gray-500 mt-1 text-center">Português → Inglês</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
