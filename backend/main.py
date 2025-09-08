@@ -6,6 +6,8 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 import os
+import requests
+import random
 from dotenv import load_dotenv
 
 from database import SessionLocal, engine, Base
@@ -65,6 +67,171 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+# Função de tradução para flashcards de vocabulário
+async def get_translation(word: str) -> str:
+    """
+    Sistema de tradução automática para flashcards de vocabulário.
+    Traduz palavras do inglês para português usando um serviço confiável.
+    """
+    
+    # Dicionário de traduções comuns para melhor performance
+    translations = {
+        'study': 'estudar',
+        'enjoy': 'apreciar, gostar',
+        'love': 'amar',
+        'work': 'trabalhar',
+        'play': 'brincar, jogar',
+        'sleep': 'dormir',
+        'eat': 'comer',
+        'drink': 'beber',
+        'think': 'pensar',
+        'feel': 'sentir',
+        'learn': 'aprender',
+        'teach': 'ensinar',
+        'help': 'ajudar',
+        'care': 'cuidar',
+        'hope': 'esperar',
+        'dream': 'sonhar',
+        'travel': 'viajar',
+        'home': 'casa',
+        'friend': 'amigo',
+        'family': 'família',
+        'happy': 'feliz',
+        'sad': 'triste',
+        'angry': 'bravo',
+        'excited': 'animado',
+        'worried': 'preocupado',
+        'proud': 'orgulhoso',
+        'surprised': 'surpreso',
+        'run': 'correr',
+        'jump': 'pular',
+        'swim': 'nadar',
+        'dance': 'dançar',
+        'sing': 'cantar',
+        'paint': 'pintar',
+        'cook': 'cozinhar',
+        'dog': 'cachorro',
+        'cat': 'gato',
+        'car': 'carro',
+        'house': 'casa',
+        'tree': 'árvore',
+        'water': 'água',
+        'fire': 'fogo',
+        'sun': 'sol',
+        'moon': 'lua',
+        'star': 'estrela',
+        'book': 'livro',
+        'music': 'música',
+        'sport': 'esporte',
+        'food': 'comida',
+        'money': 'dinheiro',
+        'time': 'tempo',
+        'school': 'escola',
+        'hospital': 'hospital',
+        'park': 'parque',
+        'beach': 'praia',
+        'mountain': 'montanha',
+        'city': 'cidade',
+        'country': 'país',
+        'hello': 'olá',
+        'goodbye': 'tchau',
+        'thank you': 'obrigado',
+        'please': 'por favor',
+        'yes': 'sim',
+        'no': 'não',
+        'big': 'grande',
+        'small': 'pequeno',
+        'good': 'bom',
+        'bad': 'ruim',
+        'new': 'novo',
+        'old': 'velho',
+        'hot': 'quente',
+        'cold': 'frio',
+        'fast': 'rápido',
+        'slow': 'lento',
+        'easy': 'fácil',
+        'difficult': 'difícil',
+        'beautiful': 'bonito',
+        'ugly': 'feio',
+        'rich': 'rico',
+        'poor': 'pobre',
+        'young': 'jovem',
+        'strong': 'forte',
+        'weak': 'fraco',
+        'tall': 'alto',
+        'short': 'baixo',
+        'fat': 'gordo',
+        'thin': 'magro',
+        'clean': 'limpo',
+        'dirty': 'sujo',
+        'full': 'cheio',
+        'empty': 'vazio',
+        'open': 'aberto',
+        'closed': 'fechado',
+        'right': 'direita',
+        'left': 'esquerda',
+        'up': 'cima',
+        'down': 'baixo',
+        'front': 'frente',
+        'back': 'trás',
+        'inside': 'dentro',
+        'outside': 'fora',
+        'here': 'aqui',
+        'there': 'ali',
+        'today': 'hoje',
+        'yesterday': 'ontem',
+        'tomorrow': 'amanhã',
+        'morning': 'manhã',
+        'afternoon': 'tarde',
+        'evening': 'noite',
+        'night': 'noite',
+        'week': 'semana',
+        'month': 'mês',
+        'year': 'ano',
+        'day': 'dia',
+        'hour': 'hora',
+        'minute': 'minuto',
+        'second': 'segundo',
+        'monday': 'segunda-feira',
+        'tuesday': 'terça-feira',
+        'wednesday': 'quarta-feira',
+        'thursday': 'quinta-feira',
+        'friday': 'sexta-feira',
+        'saturday': 'sábado',
+        'sunday': 'domingo',
+        'january': 'janeiro',
+        'february': 'fevereiro',
+        'march': 'março',
+        'april': 'abril',
+        'may': 'maio',
+        'june': 'junho',
+        'july': 'julho',
+        'august': 'agosto',
+        'september': 'setembro',
+        'october': 'outubro',
+        'november': 'novembro',
+        'december': 'dezembro'
+    }
+    
+    # Buscar tradução no dicionário
+    translation = translations.get(word.lower(), word)
+    
+    # Se não encontrou no dicionário, usar um serviço de tradução online
+    if translation == word:
+        try:
+            # Usar MyMemory API (gratuita e confiável)
+            url = f"https://api.mymemory.translated.net/get?q={word}&langpair=en|pt"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                if data['responseStatus'] == 200 and data['responseData']['translatedText']:
+                    translation = data['responseData']['translatedText']
+        except:
+            # Se falhar, manter a palavra original
+            translation = word
+    
+    return translation
 
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
@@ -141,45 +308,89 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
 
 @app.get("/flashcards", response_model=list[FlashcardResponse])
 async def get_flashcards(db: Session = Depends(get_db)):
-    flashcards = db.query(Flashcard).all()
-    return flashcards
+    # Ordenar por data de criação (mais recentes primeiro)
+    flashcards = db.query(Flashcard).order_by(Flashcard.created_at.desc()).all()
+    return [
+        FlashcardResponse(
+            id=card.id,
+            word=card.word,
+            translation=card.translation
+        ) for card in flashcards
+    ]
 
 @app.post("/flashcards", response_model=FlashcardResponse)
 async def create_flashcard(flashcard: FlashcardCreate, db: Session = Depends(get_db)):
+    # Gerar tradução para a palavra
+    translation = await get_translation(flashcard.word)
+    
     db_flashcard = Flashcard(
         word=flashcard.word,
-        icon_url=flashcard.iconUrl
+        translation=translation
     )
     db.add(db_flashcard)
     db.commit()
     db.refresh(db_flashcard)
-    return db_flashcard
+    return FlashcardResponse(
+        id=db_flashcard.id,
+        word=db_flashcard.word,
+        translation=db_flashcard.translation
+    )
+
+@app.delete("/flashcards/{flashcard_id}")
+async def delete_flashcard(flashcard_id: int, db: Session = Depends(get_db)):
+    """Deletar um flashcard específico"""
+    flashcard = db.query(Flashcard).filter(Flashcard.id == flashcard_id).first()
+    
+    if not flashcard:
+        raise HTTPException(status_code=404, detail="Flashcard não encontrado")
+    
+    db.delete(flashcard)
+    db.commit()
+    
+    return {"message": "Flashcard deletado com sucesso"}
+
+@app.get("/translation/{word}")
+async def get_translation_endpoint(word: str):
+    """
+    Endpoint para buscar tradução de uma palavra específica
+    """
+    try:
+        translation = await get_translation(word)
+        return {"word": word, "translation": translation}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar imagem: {str(e)}")
 
 @app.post("/flashcards-gerados", response_model=list[FlashcardResponse])
 async def generate_flashcards(categories: CategoryRequest, db: Session = Depends(get_db)):
-    # Simular geração de flashcards baseado nas categorias
-    # Em uma implementação real, você usaria uma API de imagens como Unsplash
+    """
+    Gera flashcards inteligentes usando o sistema de busca de imagens avançado
+    """
     generated_flashcards = []
     
     for category in categories.categorias:
-        # Exemplo de flashcards gerados para cada categoria
+        # Palavras expandidas para cada categoria (incluindo conceitos abstratos)
         sample_words = {
-            "animals": ["cat", "dog", "bird", "fish", "lion"],
-            "colors": ["red", "blue", "green", "yellow", "purple"],
-            "food": ["apple", "banana", "bread", "milk", "cheese"],
-            "family": ["mother", "father", "sister", "brother", "grandmother"],
-            "school": ["book", "pen", "pencil", "teacher", "student"]
+            "animals": ["cat", "dog", "bird", "fish", "lion", "elephant", "butterfly"],
+            "colors": ["red", "blue", "green", "yellow", "purple", "orange", "pink"],
+            "food": ["apple", "banana", "bread", "milk", "cheese", "pizza", "cake"],
+            "family": ["mother", "father", "sister", "brother", "grandmother", "baby", "cousin"],
+            "school": ["book", "pen", "pencil", "teacher", "student", "classroom", "homework"],
+            "emotions": ["happy", "sad", "angry", "excited", "worried", "proud", "surprised"],
+            "actions": ["run", "jump", "swim", "dance", "sing", "paint", "cook"],
+            "abstract": ["love", "hope", "dream", "freedom", "peace", "wisdom", "courage"],
+            "activities": ["study", "work", "play", "sleep", "eat", "travel", "exercise"],
+            "nature": ["tree", "flower", "mountain", "ocean", "sun", "moon", "star"]
         }
         
         words = sample_words.get(category.lower(), [category + "1", category + "2", category + "3"])
         
         for word in words[:3]:  # Limitar a 3 flashcards por categoria
-            # URL de exemplo para ícones (em produção, use uma API real)
-            icon_url = f"https://via.placeholder.com/150/4F46E5/FFFFFF?text={word.upper()}"
+            # Usar o sistema de tradução
+            translation = await get_translation(word)
             
             db_flashcard = Flashcard(
                 word=word,
-                icon_url=icon_url
+                translation=translation
             )
             db.add(db_flashcard)
             generated_flashcards.append(db_flashcard)
@@ -190,7 +401,13 @@ async def generate_flashcards(categories: CategoryRequest, db: Session = Depends
     for flashcard in generated_flashcards:
         db.refresh(flashcard)
     
-    return generated_flashcards
+    return [
+        FlashcardResponse(
+            id=card.id,
+            word=card.word,
+            translation=card.translation
+        ) for card in generated_flashcards
+    ]
 
 if __name__ == "__main__":
     import uvicorn

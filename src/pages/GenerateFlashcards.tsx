@@ -1,32 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Importando o hook useNavigate
 
 interface Flashcard {
+  id: number;
   word: string;
-  iconUrl: string;
+  translation: string;
 }
 
 const GenerateFlashcards: React.FC = () => {
 
     const [word, setWord] = useState<string>('');
-    const [iconUrl, setIconUrl] = useState<string | null>(null);
-    const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
+    const [translation, setTranslation] = useState<string | null>(null);
 
     const navigate = useNavigate(); // Usando o hook useNavigate para navegação
-
-    useEffect(() => {
-        const fetchFlashcards = async () => {
-            try {
-                const response = await fetch('http://localhost:8000/flashcards');
-                const data = await response.json();
-                setFlashcards(data);
-            } catch (error) {
-                console.error('Erro ao buscar flashcards:', error);
-            }
-        };
-
-        fetchFlashcards();
-    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -40,34 +26,26 @@ const GenerateFlashcards: React.FC = () => {
         }
 
         try {
-            const response = await fetch(
-                `https://api.iconify.design/search?query=${encodeURIComponent(word.toLowerCase())}`
-            );
+            // Usar o sistema de tradução do backend
+            const response = await fetch(`http://localhost:8000/translation/${encodeURIComponent(word.toLowerCase())}`);
             if (response.ok) {
                 const data = await response.json();
-                if (data.icons && data.icons.length > 0) {
-                    const iconName = data.icons[0];
-                    const iconUrl = `https://api.iconify.design/${iconName}.svg`;
-                    setIconUrl(iconUrl); // Define o URL do ícone imediatamente
-                } else {
-                    alert('Nenhum ícone encontrado para esta palavra. Tente outro.');
-                    setIconUrl(null);
-                }
+                setTranslation(data.translation);
             } else {
-                alert('Falha ao obter o ícone. Por favor, tente novamente.');
-                setIconUrl(null);
+                alert('Falha ao obter a tradução. Por favor, tente novamente.');
+                setTranslation(null);
             }
         } catch (error) {
-            console.error('Erro ao buscar o ícone:', error);
-            alert('Falha ao obter o ícone. Por favor, tente novamente.');
-            setIconUrl(null);
+            console.error('Erro ao buscar a tradução:', error);
+            alert('Falha ao obter a tradução. Por favor, tente novamente.');
+            setTranslation(null);
         }
     };
 
     const handleSave = async () => {
-        if (iconUrl) {
+        if (translation) {
             try {
-                const newFlashcard = { word: word, iconUrl };
+                const newFlashcard = { word: word };
                 const response = await fetch('http://localhost:8000/flashcards', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -75,10 +53,9 @@ const GenerateFlashcards: React.FC = () => {
                 });
 
                 if (response.ok) {
-                    const savedFlashcard = await response.json();
-                    setFlashcards((prevFlashcards: any) => [savedFlashcard, ...prevFlashcards]);
                     setWord('');
-                    setIconUrl(null);
+                    setTranslation(null);
+                    alert('Flashcard salvo com sucesso!');
                 } else {
                     alert('Falha ao salvar o flashcard.');
                 }
@@ -93,80 +70,95 @@ const GenerateFlashcards: React.FC = () => {
         setWord(e.target.value);
 
         if (e.target.value === '') {
-            setIconUrl(null);
+            setTranslation(null);
         }
     };
 
 
-    return (
-        <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4 sm:p-6 font-poppins text-gray-800">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-clip-text">
-                🎮 English Learning Game 🎉
-            </h1>
 
-            {/* Resto da funcionalidade de pesquisa e visualização */}
-            <input
-                type="text"
-                placeholder="Type a word (e.g., car)"
-                value={word}
-                onChange={handleInputChange}
-                className="w-full sm:w-2/3 lg:w-1/2 h-16 px-6 text-2xl font-semibold text-gray-700 placeholder-gray-500 bg-white border-4 border-transparent rounded-full shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
-            />
-            <div className="flex flex-wrap gap-4 justify-center">
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4 sm:p-6 font-poppins text-gray-800">
+            {/* Header com navegação */}
+            <div className="flex justify-between items-center mb-8">
+                <div className="flex items-center space-x-4">
+                    <button
+                        onClick={() => navigate('/app')}
+                        className="flex items-center space-x-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
+                    >
+                        <span>←</span>
+                        <span>Voltar</span>
+                    </button>
+                    <h1 className="text-2xl font-bold text-gray-800">✨ Gerar Flashcards</h1>
+                </div>
                 <button
-                    onClick={handleSearch}
-                    disabled={!word.trim()}
-                    className={`px-6 py-3 rounded-xl text-lg font-semibold flex items-center justify-center mt-4 ${word.trim()
-                        ? 'bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 shadow-md text-white'
-                        : 'bg-gray-400 cursor-not-allowed text-white'
-                        }`}
+                    onClick={() => {
+                        localStorage.removeItem('token');
+                        navigate('/login');
+                    }}
+                    className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-200 flex items-center space-x-2"
                 >
-                    Search Icon
-                </button>
-                <button
-                    onClick={handleSave}
-                    disabled={!iconUrl}
-                    className={`px-6 py-3 rounded-xl text-lg font-semibold flex items-center justify-center mt-4 ${iconUrl
-                        ? 'bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 shadow-md text-white'
-                        : 'bg-gray-400 cursor-not-allowed text-white'
-                        }`}
-                >
-                    Save
+                    <span>🚪</span>
+                    <span>Logout</span>
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 w-full max-w-4xl">
-                {iconUrl && (
-                    <div className="flex flex-col items-center justify-center w-full sm:w-56 h-56 bg-white rounded-3xl shadow-lg p-4">
-                        <div
-                            className="w-32 h-32 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full flex items-center justify-center"
-                            style={{
-                                maskImage: `url(${iconUrl})`,
-                                maskSize: 'cover',
-                                WebkitMaskImage: `url(${iconUrl})`,
-                                WebkitMaskSize: 'cover',
-                            }}
-                        ></div>
-                        <p className="mt-4 text-xl font-semibold text-gray-800">{word}</p>
+            {/* Conteúdo principal */}
+            <div className="flex flex-col justify-center items-center min-h-[calc(100vh-120px)]">
+                <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-center">
+                    Crie seus flashcards personalizados
+                </h2>
+
+                {/* Campo de busca */}
+                <div className="w-full max-w-2xl mb-8">
+                    <input
+                        type="text"
+                        placeholder="Digite uma palavra em inglês (ex: car, house, beautiful)"
+                        value={word}
+                        onChange={handleInputChange}
+                        className="w-full h-16 px-6 text-xl font-semibold text-gray-700 placeholder-gray-500 bg-white border-4 border-transparent rounded-full shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
+                    />
+                </div>
+
+                {/* Botões de ação */}
+                <div className="flex flex-wrap gap-4 justify-center mb-8">
+                    <button
+                        onClick={handleSearch}
+                        disabled={!word.trim()}
+                        className={`px-8 py-4 rounded-xl text-lg font-semibold flex items-center justify-center space-x-2 transition-all duration-300 ${
+                            word.trim()
+                                ? 'bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 shadow-lg text-white transform hover:scale-105'
+                                : 'bg-gray-400 cursor-not-allowed text-white'
+                        }`}
+                    >
+                        <span>🔍</span>
+                        <span>Buscar Tradução</span>
+                    </button>
+                    <button
+                        onClick={handleSave}
+                        disabled={!translation}
+                        className={`px-8 py-4 rounded-xl text-lg font-semibold flex items-center justify-center space-x-2 transition-all duration-300 ${
+                            translation
+                                ? 'bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 shadow-lg text-white transform hover:scale-105'
+                                : 'bg-gray-400 cursor-not-allowed text-white'
+                        }`}
+                    >
+                        <span>💾</span>
+                        <span>Salvar Flashcard</span>
+                    </button>
+                </div>
+
+                {/* Exibição do resultado da busca */}
+                {translation && (
+                    <div className="w-full max-w-md">
+                        <div className="flex flex-col items-center justify-center w-full h-56 bg-white rounded-3xl shadow-lg p-4 transform hover:scale-105 transition-all duration-300">
+                            <div className="w-32 h-32 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
+                                <div className="text-6xl">📚</div>
+                            </div>
+                            <p className="mt-4 text-xl font-semibold text-gray-800">{word}</p>
+                            <p className="text-lg text-blue-600 font-semibold mt-2">{translation}</p>
+                        </div>
                     </div>
                 )}
-                {flashcards.map((card, index) => (
-                    <div
-                        key={index}
-                        className="flex flex-col items-center justify-center w-full sm:w-56 h-56 bg-white rounded-3xl shadow-lg p-4"
-                    >
-                        <div
-                            className="w-32 h-32 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full flex items-center justify-center"
-                            style={{
-                                maskImage: `url(${card.iconUrl})`,
-                                maskSize: 'cover',
-                                WebkitMaskImage: `url(${card.iconUrl})`,
-                                WebkitMaskSize: 'cover',
-                            }}
-                        ></div>
-                        <p className="mt-4 text-xl font-semibold text-gray-800">{card.word}</p>
-                    </div>
-                ))}
             </div>
         </div>
     );

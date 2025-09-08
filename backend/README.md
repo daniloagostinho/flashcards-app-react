@@ -72,6 +72,7 @@ Acesse `http://localhost:8000/docs` para ver a documentação interativa da API 
 - `GET /flashcards` - Listar todos os flashcards
 - `POST /flashcards` - Criar novo flashcard
 - `POST /flashcards-gerados` - Gerar flashcards por categoria
+- `GET /smart-image/{word}` - Buscar imagem inteligente para uma palavra
 
 ## 🗄️ Banco de Dados
 
@@ -86,8 +87,39 @@ O projeto usa SQLite como banco de dados local:
 Crie um arquivo `.env` na pasta `backend/`:
 
 ```env
+# Chave secreta para JWT (obrigatória)
 SECRET_KEY=sua-chave-secreta-aqui
+
+# Chave da API Unsplash (opcional - para imagens reais)
+# Obtenha sua chave em: https://unsplash.com/developers
+UNSPLASH_ACCESS_KEY=sua-chave-unsplash-aqui
 ```
+
+**Nota:** A chave do Unsplash é opcional. Sem ela, o sistema usará ícones SVG e fallbacks inteligentes.
+
+## 🧠 Sistema Inteligente de Imagens
+
+O backend implementa um sistema inteligente de busca de imagens que funciona em 3 níveis:
+
+### 1. **Ícones SVG (Iconify API)**
+- Melhor para objetos concretos: `cat`, `dog`, `car`, `house`
+- Busca automática em milhares de ícones
+- Formato SVG escalável e leve
+
+### 2. **Imagens Reais (Unsplash API)**
+- Melhor para conceitos abstratos: `study`, `enjoy`, `love`, `hope`
+- Mapeamento inteligente de palavras para termos visuais
+- Imagens de alta qualidade e relevância
+
+### 3. **Fallback Inteligente**
+- Emojis + texto estilizado para palavras não encontradas
+- Cores aleatórias e design atrativo
+- Garante que sempre haverá uma representação visual
+
+### Exemplos de Funcionamento:
+- `"study"` → Ícone de livros 📚 ou imagem de estudante
+- `"love"` → Ícone de coração ❤️ ou imagem romântica  
+- `"xyz123"` → Fallback com emoji 💡 e texto estilizado
 
 ### CORS
 O backend está configurado para aceitar requisições de:

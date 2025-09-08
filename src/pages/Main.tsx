@@ -8,6 +8,7 @@ import LoginPage from './LoginPage';
 import ProtectedRoute from '../guards/ProtectedRoute';
 import GenerateFlashcards from './GenerateFlashcards';
 import FlashcardsList from './FlashcardsList';
+import MyFlashcards from './MyFlashcards';
 
 const Main: React.FC = () => {
   return (
@@ -17,8 +18,9 @@ const Main: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage/>} />
         <Route path="/app" element={<ProtectedRoute element={<App />} />} />
-        <Route path="/generate" element={<GenerateFlashcards />} />
-        <Route path="/flashcards" element={<FlashcardsList />} />
+        <Route path="/generate" element={<ProtectedRoute element={<GenerateFlashcards />} />} />
+        <Route path="/flashcards" element={<ProtectedRoute element={<FlashcardsList />} />} />
+        <Route path="/my-flashcards" element={<ProtectedRoute element={<MyFlashcards />} />} />
       </Routes>
     </Router>
   );

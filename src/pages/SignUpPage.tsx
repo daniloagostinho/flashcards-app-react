@@ -16,7 +16,7 @@ const SignUpPage: React.FC = () => {
     setLoading(true); // Start loading
 
     try {
-      const response = await fetch('https://backend-flashcards-app.vercel.app/signup', {
+      const response = await fetch('http://localhost:8000/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

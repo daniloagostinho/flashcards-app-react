@@ -20,13 +20,14 @@ class UserResponse(UserBase):
 
 class FlashcardBase(BaseModel):
     word: str
-    iconUrl: str
 
 class FlashcardCreate(FlashcardBase):
     pass
 
-class FlashcardResponse(FlashcardBase):
+class FlashcardResponse(BaseModel):
     id: int
+    word: str
+    translation: str
     
     class Config:
         from_attributes = True
