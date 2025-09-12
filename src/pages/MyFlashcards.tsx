@@ -129,7 +129,7 @@ const MyFlashcards: React.FC = () => {
             {getCountByDirection('en_to_pt') > 0 && (
               <div className="mb-12">
                 <div className="flex items-center mb-6">
-                  <div className="text-3xl mr-3">🇺🇸➡️🇧🇷</div>
+                  <div className="text-3xl mr-3">📚</div>
                   <h3 className="text-2xl font-bold text-gray-800">Inglês → Português</h3>
                   <span className="ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
                     {getCountByDirection('en_to_pt')} flashcards
@@ -140,7 +140,7 @@ const MyFlashcards: React.FC = () => {
                   {getFlashcardsByDirection('en_to_pt').map((card) => (
                     <div
                       key={card.id}
-                      className="relative flex flex-col items-center justify-center w-full h-48 bg-white rounded-3xl shadow-lg p-4 transform hover:scale-105 transition-all duration-300"
+                      className="relative flex flex-col items-center justify-center w-full min-h-48 bg-white rounded-3xl shadow-lg p-4 transform hover:scale-105 transition-all duration-300"
                     >
                       <button
                         onClick={() => handleDelete(card.id)}
@@ -150,10 +150,10 @@ const MyFlashcards: React.FC = () => {
                         ×
                       </button>
                       <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
-                        <div className="text-4xl">🇺🇸➡️🇧🇷</div>
+                        <div className="text-4xl">📚</div>
                       </div>
-                      <p className="mt-4 text-lg font-semibold text-gray-800 text-center">{card.word}</p>
-                      <p className="text-base text-blue-600 font-semibold mt-2 text-center">{card.translation}</p>
+                      <p className="mt-4 text-lg font-semibold text-gray-800 text-center break-words px-2">{card.word}</p>
+                      <p className="text-base text-blue-600 font-semibold mt-2 text-center break-words px-2">{card.translation}</p>
                       <p className="text-xs text-gray-500 mt-1 text-center">Inglês → Português</p>
                     </div>
                   ))}
@@ -165,7 +165,7 @@ const MyFlashcards: React.FC = () => {
             {getCountByDirection('pt_to_en') > 0 && (
               <div className="mb-12">
                 <div className="flex items-center mb-6">
-                  <div className="text-3xl mr-3">🇧🇷➡️🇺🇸</div>
+                  <div className="text-3xl mr-3">📚</div>
                   <h3 className="text-2xl font-bold text-gray-800">Português → Inglês</h3>
                   <span className="ml-4 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
                     {getCountByDirection('pt_to_en')} flashcards
@@ -176,7 +176,7 @@ const MyFlashcards: React.FC = () => {
                   {getFlashcardsByDirection('pt_to_en').map((card) => (
                     <div
                       key={card.id}
-                      className="relative flex flex-col items-center justify-center w-full h-48 bg-white rounded-3xl shadow-lg p-4 transform hover:scale-105 transition-all duration-300"
+                      className="relative flex flex-col items-center justify-center w-full min-h-48 bg-white rounded-3xl shadow-lg p-4 transform hover:scale-105 transition-all duration-300"
                     >
                       <button
                         onClick={() => handleDelete(card.id)}
@@ -186,10 +186,10 @@ const MyFlashcards: React.FC = () => {
                         ×
                       </button>
                       <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-green-100 to-blue-100">
-                        <div className="text-4xl">🇧🇷➡️🇺🇸</div>
+                        <div className="text-4xl">📚</div>
                       </div>
-                      <p className="mt-4 text-lg font-semibold text-gray-800 text-center">{card.word}</p>
-                      <p className="text-base text-green-600 font-semibold mt-2 text-center">{card.translation}</p>
+                      <p className="mt-4 text-lg font-semibold text-gray-800 text-center break-words px-2">{card.word}</p>
+                      <p className="text-base text-green-600 font-semibold mt-2 text-center break-words px-2">{card.translation}</p>
                       <p className="text-xs text-gray-500 mt-1 text-center">Português → Inglês</p>
                     </div>
                   ))}
